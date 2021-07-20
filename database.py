@@ -15,7 +15,9 @@ class Table:
 class Query:
   def __init__(self, table_name, field, value, comparator, parent=None):
     self.table_name = table_name
-    self.conds = [(field, value, comparator)] + parent.conds
+    self.conds = [(field, value, comparator)]
+    if (parent != None):
+      self.conds += parent.conds
   
   def where(self, field, value, comparator='='):
     return Query(self.table_name, field, value, comparator, parent=self)
@@ -48,11 +50,16 @@ class Result:
 
 def read(table_name):
   with sql.connect(DB_NAME) as con:
-    cmd = """
+    cur = con.cursor()
+    cur.execute("""
       SELECT name
         FROM sqlite_master
         WHERE type='table'
-          AND name='
-    """ + table_name + "';"
+          AND name=?;
+    """, table_name)
 
-    con.execute(cmd)
+    if (len(cur.fetchall() == 0)):
+      raise BaseException("No such table exists")
+    
+    return Table(table_name)
+
