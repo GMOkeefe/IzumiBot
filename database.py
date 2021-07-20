@@ -51,14 +51,10 @@ class Result:
 def read(table_name):
   with sql.connect(DB_NAME) as con:
     cur = con.cursor()
-    cur.execute("""
-      SELECT name
-        FROM sqlite_master
-        WHERE type='table'
-          AND name=?;
-    """, table_name)
+    cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?;", \
+      (table_name,))
 
-    if (len(cur.fetchall() == 0)):
+    if (len(cur.fetchall()) == 0):
       raise BaseException("No such table exists")
     
     return Table(table_name)
