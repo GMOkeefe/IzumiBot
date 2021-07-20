@@ -15,10 +15,10 @@ async def on_message(message):
     return
 
   if message.content.startswith('!hello'):
-    commands.hello(message.channel)
+    await commands.hello(message.channel)
   
   if message.content.startswith('!pop'):
-    commands.pop(message.author, message.channel)
+    await commands.pop(message.author, message.channel)
 
 if __name__ == "__main__":
   client.run(os.environ['TOKEN'])

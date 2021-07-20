@@ -12,7 +12,7 @@ with sql.connect(DB_NAME) as con:
         pop_num INTEGER NOT NULL DEFAULT 0
       );
     """)
-  except BaseException as e:
+  except sql.Error as e:
     print(str(e))
 
   try:
@@ -25,5 +25,5 @@ with sql.connect(DB_NAME) as con:
     cur.execute("INSERT INTO test VALUES (0, 'test1');")
     cur.execute("INSERT INTO test VALUES (1, 'test2');")
     cur.execute("INSERT INTO test VALUES (2, 'test3');")
-  except BaseException as e:
+  except sql.Error as e:
     print(str(e))

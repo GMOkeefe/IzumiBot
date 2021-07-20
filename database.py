@@ -33,18 +33,36 @@ class Result:
   
   def execute(self):
     with sql.connect(DB_NAME) as con:
-      with con.cursor() as cur:
-        cur.execute(self.gen_statement())
+      cur = con.cursor()
+      return cur.execute(self.gen_statement_for_execute(), self.gen_tuple_for_execute())
   
+  def gen_statement_for_execute(self):
+    statement = "SELECT " + self.col_name + " FROM " + self.table_name
+
+    if self.conds != None:
+      statement += " WHERE " + self.conds[0][0] + " " + self.conds[0][2] + " ?"
+      for cond in self.conds[1:]:
+        statement += " AND " + self.conds[0] + " " + cond[2] + " ?"
+    
+    return statement + ";"
+
+  def gen_tuple_for_execute(self):
+    lst = []
+    if self.conds != None:
+      for cond in self.conds:
+        lst += [cond[1]]
+    
+    return tuple(lst)
+
   def gen_statement(self):
     statement = "SELECT " + self.col_name + " FROM " + self.table_name
 
-    if (self.conds != None):
+    if self.conds != None:
       statement += " WHERE " + self.conds[0][0] + " " + \
-        self.conds[0][2] + " " + self.conds[0][1]
+        self.conds[0][2] + " " + str(self.conds[0][1])
       for cond in self.conds[1:]:
         statement += " AND " + cond[0] + " " + cond[2] + " " + \
-          cond[1]
+          str(cond[1])
       
     return statement + ";"
 
@@ -55,7 +73,22 @@ def read(table_name):
       (table_name,))
 
     if (len(cur.fetchall()) == 0):
-      raise BaseException("No such table exists")
+      raise sql.ProgrammingError("No such table exists")
     
     return Table(table_name)
 
+def insert(table_name, **values):
+  vallist = []
+  statement = "INSERT INTO " + table_name + " ("
+  for key, value in values.items():
+    statement += key
+    vallist += [value]
+  statement += ") VALUES (?"
+  for value in vallist[1:]:
+    statement += ", ?"
+  statement += ");"
+
+  with sql.connect(DB_NAME) as con:
+    cur = con.cursor()
+
+    cur.execute(statement, vallist)
