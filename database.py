@@ -1,5 +1,6 @@
 import sqlite3 as sql
-from constants.py import DB_NAME
+
+DB_NAME = 'izumi.db'
 
 class Table:
   def __init__(self, name):

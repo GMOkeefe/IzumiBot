@@ -20,4 +20,5 @@ async def on_message(message):
   if message.content.startswith('!pop'):
     commands.pop(message.author, message.channel)
 
-client.run(os.environ['TOKEN'])
+if __name__ == "__main__":
+  client.run(os.environ['TOKEN'])

@@ -1,7 +1,7 @@
 import database
 
-def hello(channel):
+async def hello(channel):
   await channel.send("Hello!")
 
-def pop(user, channel):
+async def pop(user, channel):
   pop_num = ...
